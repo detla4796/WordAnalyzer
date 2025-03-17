@@ -7,32 +7,38 @@
 
 using namespace std;
 
-unique_ptr<vector<string>> readFile(const string& fname) {
-    auto lines = make_unique<vector<string>>();
+vector<string>* readFile(const string& fname)
+{
+    vector<string>* lines = new vector<string>();
     ifstream f(fname);
-    if (!f.is_open()) {
+    if (!f.is_open())
+    {
         cout << "Error opening file: " << fname << endl;
         return lines;
     }
     
     string line;
-    while (getline(f, line)) {
+    while (getline(f, line))
+    {
         lines->push_back(line);
     }
     return lines;
 }
 
-int* countWords(const string& str) {
-    int* count = (int*)malloc(sizeof(int));
-    if (!count) return nullptr;
-    
+int* countWords(const string& str)
+{
+    int* count = new int;
     *count = 0;
     bool inWord = false;
     
-    for (char c : str) {
-        if (c == ' ' || c == '\t') {
+    for (char c : str)
+    {
+        if (c == ' ' || c == '\t')
+        {
             inWord = false;
-        } else if (!inWord) {
+        }
+        else if (!inWord)
+        {
             (*count)++;
             inWord = true;
         }
@@ -40,87 +46,130 @@ int* countWords(const string& str) {
     return count;
 }
 
-string* findLongestWord(const string& str) {
-    string* longest = (string*)malloc(sizeof(string));
-    if (!longest) return nullptr;
-    
-    *longest = "";
+string* findLongestWord(const string& str)
+{
+    string* longest = new string("");
     string word = "";
     
-    for (char c : str) {
-        if (c == ' ' || c == '\t') {
-            if (word.length() > longest->length()) {
+    for (char c : str)
+    {
+        if (c == ' ' || c == '\t')
+        {
+            if (word.length() > longest->length())
+            {
                 *longest = word;
             }
             word = "";
-        } else {
+        }
+        else
+        {
             word += c;
         }
     }
-    if (word.length() > longest->length()) {
+    
+    if (word.length() > longest->length())
+    {
         *longest = word;
     }
     return longest;
 }
 
-unique_ptr<string> replaceVowels(const string& str) {
-    auto r = make_unique<string>(str);
+string* replaceVowels(const string& str)
+{
+    string* r = new string(str);
     string vowels = "aeiouAEIOU";
-    for (char& c : *r) {
-        if (vowels.find(c) != string::npos) {
+    for (char& c : *r)
+    {
+        if (vowels.find(c) != string::npos)
+        {
             c = '*';
         }
     }
     return r;
 }
 
-void results(const string& fname, const vector<string>& olines, const vector<int*>& wcount, const vector<string*>& lword, const vector<unique_ptr<string>>& vowels) {
+bool results(const string& fname, const vector<string>& olines, const vector<int*>& wcount, const vector<string*>& lword, const vector<string*>& vowels)
+{
     ofstream f(fname);
-    if (!f.is_open()) {
+    if (!f.is_open())
+    {
         cout << "Error opening output file: " << fname << endl;
-        return;
+        return false;
     }
 
     f << "Original lines:\n";
-    for (const auto& l : olines) {
+    for (const auto& l : olines)
+    {
         f << l << endl;
     }
 
     f << "\nWord counts:\n";
-    for (size_t i = 0; i < wcount.size(); i++) {
+    for (size_t i = 0; i < wcount.size(); i++)
+    {
         f << "Line " << i + 1 << ": " << *wcount[i] << " words" << endl;
     }
 
     f << "\nLongest word:\n";
-    for (size_t i = 0; i < lword.size(); i++) {
+    for (size_t i = 0; i < lword.size(); i++)
+    {
         f << "Line " << i + 1 << ": " << *lword[i] << endl;
     }
 
     f << "\nVowels replaced:\n";
-    for (size_t i = 0; i < vowels.size(); i++) {
+    for (size_t i = 0; i < vowels.size(); i++)
+    {
         f << "Line " << i + 1 << ": " << *vowels[i] << endl;
     }
+    
+    f.close();
+    return true;
 }
 
-int main() {
+int main()
+{
     string inputFile = "input.txt";
     string outputFile = "output.txt";
     
-    auto lines = readFile(inputFile);
+    vector<string>* lines = readFile(inputFile);
+    if (lines->empty())
+    {
+        cout << "No data to process, exiting." << endl;
+        delete lines;
+        return 1;
+    }
+    
     vector<int*> wordCounts;
     vector<string*> longestWords;
-    vector<unique_ptr<string>> replacedVowels;
+    vector<string*> replacedVowels;
 
-    for (const auto& line : *lines) {
+    for (const auto& line : *lines)
+    {
         wordCounts.push_back(countWords(line));
         longestWords.push_back(findLongestWord(line));
         replacedVowels.push_back(replaceVowels(line));
     }
 
-    results(outputFile, *lines, wordCounts, longestWords, replacedVowels);
+    if (!results(outputFile, *lines, wordCounts, longestWords, replacedVowels))
+    {
+        cout << "Failed to write results to file." << endl;
+        
+        // Освобождаем память
+        delete lines;
+        for (auto ptr : wordCounts) delete ptr;
+        for (auto ptr : longestWords) delete ptr;
+        for (auto ptr : replacedVowels) delete ptr;
+        
+        return 1;
+    }
+    else
+    {
+        cout << "Results successfully written to " << outputFile << endl;
+    }
     
-    for (auto ptr : wordCounts) free(ptr);
-    for (auto ptr : longestWords) free(ptr);
+    delete lines;
+    for (auto ptr : wordCounts) delete ptr;
+    for (auto ptr : longestWords) delete ptr;
+    for (auto ptr : replacedVowels) delete ptr;
     
     return 0;
 }

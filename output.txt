@@ -1,7 +1,27 @@
 Original lines:
+The leaves fell from trees in autumn
+Golden sunlight streamed through branches
+Wind whispered ancient melodies
+Children played beneath spreading oaks
+Nature created perfect harmony
 
 Word counts:
+Line 1: 7 words
+Line 2: 5 words
+Line 3: 4 words
+Line 4: 5 words
+Line 5: 4 words
 
 Longest word:
+Line 1: leaves
+Line 2: sunlight
+Line 3: whispered
+Line 4: spreading
+Line 5: created
 
 Vowels replaced:
+Line 1: Th* l**v*s f*ll fr*m tr**s *n **t*mn
+Line 2: G*ld*n s*nl*ght str**m*d thr**gh br*nch*s
+Line 3: W*nd wh*sp*r*d *nc**nt m*l*d**s
+Line 4: Ch*ldr*n pl*y*d b*n**th spr**d*ng **ks
+Line 5: N*t*r* cr**t*d p*rf*ct h*rm*ny
